@@ -141,7 +141,7 @@ func (h *Handler) persistStateToMongoDB(device *tplink.Device, state map[string]
 
 // Disconnected is called when the client disconnects from mqtt.
 func (h *Handler) Disconnected(client mqtt.Client, err error) {
-	h.logger.Info().Msg("disconnected from mqtt")
+	h.logger.Error().Msgf("disconnected from mqtt: %s", err.Error())
 }
 
 // New creates a new handler.
