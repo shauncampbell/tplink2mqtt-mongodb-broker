@@ -90,6 +90,7 @@ func (h *Handler) persistDeviceToMongodb(device *tplink.Device) {
 		{Key: "network_address", Value: device.Info.NetworkAddress},
 		{Key: "model", Value: device.Info.Model},
 		{Key: "vendor", Value: device.Info.Vendor},
+		{Key: "attributes", Value: device.Info.Exposes},
 	}
 
 	filter := bson.D{{Key: "_id", Value: "tplink_" + device.ID}}
@@ -112,9 +113,9 @@ func (h *Handler) persistStateToMongoDB(device *tplink.Device, state map[string]
 
 	// Iterate through the changes.
 	for _, attr := range device.Info.Exposes {
-		if state[attr] != nil {
-			set = append(set, bson.E{Key: attr, Value: state[attr]})
-			push = append(push, bson.E{Key: attr, Value: bson.D{{Key: "ts", Value: ts}, {Key: "v", Value: state[attr]}}})
+		if state[attr.Property] != nil {
+			set = append(set, bson.E{Key: attr.Property, Value: state[attr.Property]})
+			push = append(push, bson.E{Key: attr.Property, Value: bson.D{{Key: "ts", Value: ts}, {Key: "v", Value: state[attr.Property]}}})
 		}
 	}
 
