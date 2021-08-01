@@ -126,6 +126,20 @@ func (h *Handler) persistStateToMongoDB(device *tplink.Device, state map[string]
 	}
 
 	collection = h.database.Collection("historical_state")
+	_, err = collection.Indexes().CreateOne(
+		context.Background(),
+		mongo.IndexModel{
+			Keys: bson.D{
+				bson.E{Key: "ieee_address", Value: 1},
+				bson.E{Key: "y", Value: 1},
+				bson.E{Key: "m", Value: 1},
+				bson.E{Key: "d", Value: 1},
+			},
+		},
+	)
+	if err != nil {
+		h.logger.Error().Msgf("failed to create index in mongodb: %s", err.Error())
+	}
 
 	filter = bson.D{
 		{Key: "ieee_address", Value: device.ID},
